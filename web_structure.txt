@@ -1,0 +1,86 @@
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Alumni URL Page **
+----------------------------------------------------------------
+https://www.linkedin.com/school/unika-soegijapranata-semarang/people/
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Profile URL **
+----------------------------------------------------------------
+Profile URL on Alumni Page: //*[@id="ember1012"]/a
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Element of License & Certification **
+----------------------------------------------------------------
+//*[@id="profile-content"]/div/div[2]/div/div/main/section[7]/div[3]/ul (each license is in points by <li></li>)
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+** Element of Experience = <ul class="BLQQPYeZfPEOBptApvnHfGNvZksbQdSVTI">...</ul> **
+----------------------------------------------------------------
+Experience Section: //*[@id="profile-content"]/div/div[2]/div/div/main/section[5]/div[3]/ul
+Experience Duration:  //*[@id="profile-content"]/div/div[2]/div/div/main/section[5]/div[3]/ul/li[1]/div/div[2]/div[1]/div/span[2]
+Experience Location: //*[@id="profile-content"]/div/div[2]/div/div/main/section[5]/div[3]/ul/li[1]/div/div[2]/div[1]/div/span[3]
+Experience Detail if Candidate Have More Than One Position in One Place: //*[@id="profile-content"]/div/div[2]/div/div/main/section[5]/div[3]/ul/li[2]/div/div[2]/div[2]/ul/li[2]/div/div[2]/div[1]/a/div
+Experience Detail on Duration if Candidate Have More Than One Position in One Place: //*[@id="profile-content"]/div/div[2]/div/div/main/section[5]/div[3]/ul/li[2]/div/div[2]/div[2]/ul/li[2]/div/div[2]/div[1]/a/span
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+** Element of Educational = class="BLQQPYeZfPEOBptApvnHfGNvZksbQdSVTI">...</ul> **
+----------------------------------------------------------------
+University Name: //*[@id="profile-content"]/div/div[2]/div/div/main/section[6]/div[3]/ul/li/div/div[2]/div[1]/a/div
+Degree: //*[@id="profile-content"]/div/div[2]/div/div/main/section[6]/div[3]/ul/li/div/div[2]/div[1]/a/span[1]
+Grade: //*[@id="profile-content"]/div/div[2]/div/div/main/section[6]/div[3]/ul/li/div/div[2]/div[2]/ul/li[1]
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+** Element Person Location **
+----------------------------------------------------------------
+Personal Location: //*[@id="profile-content"]/div/div[2]/div/div/main/section[1]/div[2]/div[2]/div[2]/span[1]
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Element Profile Picture **
+----------------------------------------------------------------
+Profile Picture from Profile Page: //*[@id="profile-content"]/div/div[2]/div/div/main/section[1]/div[2]/div[1]/div[1]/div
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Profile and Headline from Alumni Page **
+----------------------------------------------------------------
+Profile Picture from Alumni Page: <div id="ember798" class="artdeco-entity-lockup__image artdeco-entity-lockup__image--type-circle ember-view" type="circle">
+
+              <a class="kvxOIgzTihjbTHaLGrgQguzNnXGpbPhmw " id="org-people-profile-card__profile-image-0" href="https://www.linkedin.com/in/njo-joanna-nydia-siswanto?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAEQVFZ8B-pfpuL_qN63ObIVNvKk7EAYsk8A" data-test-app-aware-link="">
+                <img width="104" src="https://media.licdn.com/dms/image/v2/D5635AQFMR8eFvo9DSw/profile-framedphoto-shrink_100_100/profile-framedphoto-shrink_100_100/0/1726039917698?e=1740927600&amp;v=beta&amp;t=Y5R55kQIBj0TdcHpn1A0D5FU3IAXiWpDzR-k9Z35Qjo" loading="lazy" height="104" alt="Njo Joanna Nydia Siswanto’s profile picture" id="ember799" class="evi-image lazy-image ember-view">
+              </a>
+
+          
+</div>
+
+Headline from Alumni Page: <div id="ember800" class="artdeco-entity-lockup__content ember-view">
+            <div id="ember801" class="artdeco-entity-lockup__title ember-view">
+                <a class="kvxOIgzTihjbTHaLGrgQguzNnXGpbPhmw  link-without-visited-state" aria-label="View Njo Joanna Nydia Siswanto’s profile" href="https://www.linkedin.com/in/njo-joanna-nydia-siswanto?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAEQVFZ8B-pfpuL_qN63ObIVNvKk7EAYsk8A" data-test-app-aware-link="">
+                    <div id="ember803" class="ember-view lt-line-clamp lt-line-clamp--single-line xPxokZJxWyinirdlFgiwZyuIMVjTvbAOmhpI
+                      t-black" style="">
+      Njo Joanna Nydia Siswanto
+
+<!---->  </div>
+
+                </a>
+            
+</div>
+              <div id="ember804" class="artdeco-entity-lockup__badge ember-view">    <span class="a11y-text">2nd degree connection</span>
+  <span class="artdeco-entity-lockup__degree" aria-hidden="true">
+    ·&nbsp;2nd
+  </span>
+<!----><!----></div>
+            <div id="ember805" class="artdeco-entity-lockup__subtitle ember-view">
+                <div class="t-14 t-black--light t-normal">
+                    <div id="ember807" class="ember-view lt-line-clamp lt-line-clamp--multi-line" style="-webkit-line-clamp: 2">
+      Fresh Graduate | Bachelor of Food Technology | Soegijapranata Catholic University
+
+<!---->  </div>
+
+                </div>
+            </div>
+            <div id="ember808" class="artdeco-entity-lockup__caption ember-view"></div>
+          </div>
