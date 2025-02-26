@@ -1,6 +1,3 @@
-# ignore .gitignore
-.gitignore
-
 # Ignore credentials file
 credentials.env
 
