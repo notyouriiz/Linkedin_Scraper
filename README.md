@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Linkedin University Alumni Data Scrapping
 This project is a LinkedIn alumni scraper designed to extract information about Soegijapranata Catholic University alumni. The scraper automates the LinkedIn search process using Selenium and extracts relevant details such as alumni names, workplaces, graduation years, and study durations. The collected data is then saved in a CSV file for further analysis.
 
@@ -13,4 +14,3 @@ This project is a LinkedIn alumni scraper designed to extract information about 
 2. Update the script with your LinkedIn credentials.
 3. Run the script to start scraping alumni data.
 4. The collected data will be saved as `linkedin_alumni.csv` for further analysis.
-
