@@ -1,0 +1,20 @@
+# Ignore credentials file
+credentials.env
+
+# Ignore the Backup folder
+Backup/
+
+# Other common ignores
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+
+# Logs
+logs/
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/

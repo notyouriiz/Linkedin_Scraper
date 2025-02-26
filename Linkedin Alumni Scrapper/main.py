@@ -190,7 +190,7 @@ def search_alumni(max_profiles=50):
 def save_to_csv(data):
     """Saves the scraped data to a CSV file with separate columns."""
     df = pd.DataFrame(data, columns=["Name", "Headlines", "Linkedin Link", "Profile Picture", "Experience", "Education", "Licenses & Certifications"])
-    filename = "Data/LinkedIn_SCU_Alumni.csv"
+    filename = "LinkedIn_SCU_Alumni.csv"
     df.to_csv(filename, index=False)
     print(f"✅ Data saved to {filename}")
 
