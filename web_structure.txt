@@ -2,7 +2,8 @@ ________________________________________________________________________________
 
 ** Alumni URL Page **
 ----------------------------------------------------------------
-https://www.linkedin.com/school/unika-soegijapranata-semarang/people/
+Alumni: https: //www.linkedin.com/school/unika-soegijapranata-semarang/people/
+With Keyword: https://www.linkedin.com/school/unika-soegijapranata-semarang/people/?keywords=Semarang
 
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -84,3 +85,37 @@ Headline from Alumni Page: <div id="ember800" class="artdeco-entity-lockup__cont
             </div>
             <div id="ember808" class="artdeco-entity-lockup__caption ember-view"></div>
           </div>
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Area of People Section **
+----------------------------------------------------------------
+Jakarta, Indonesia: https://www.linkedin.com/search/results/people/?geoUrn=%5B%22102454396%22%5D&heroEntityKey=urn%3Ali%3Aorganization%3A15093617&keywords=unika%20soegijapranata%20semarang&origin=FACETED_SEARCH&position=0&searchId=02df3038-32bc-4f54-8e76-7e0877ef346e&sid=)E_
+Jawa Tengah, Indonesia: https://www.linkedin.com/search/results/people/?geoUrn=%5B%22102454396%22%5D&heroEntityKey=urn%3Ali%3Aorganization%3A15093617&keywords=unika%20soegijapranata%20semarang&origin=FACETED_SEARCH&position=0&searchId=02df3038-32bc-4f54-8e76-7e0877ef346e&sid=mTj
+
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Area Pages **
+----------------------------------------------------------------
+Jawa Tengah Page 2: https://www.linkedin.com/search/results/people/?geoUrn=%5B%22102454396%22%5D&heroEntityKey=urn%3Ali%3Aorganization%3A15093617&keywords=unika%20soegijapranata%20semarang&origin=FACETED_SEARCH&page=2&position=0&searchId=02df3038-32bc-4f54-8e76-7e0877ef346e&sid=8y1
+
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** People Section on Search Page **
+----------------------------------------------------------------
+//*[@id="sDAaeilZTxeoXjeXi542iA=="]/div/ul
+
+
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+** Profile URL **
+----------------------------------------------------------------
+//*[@id="sDAaeilZTxeoXjeXi542iA=="]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/div/span[1]/span/a
+
+this is to a profile card inside <li></li>
+//*[@id="jKfJXEKBRcypXY5XFn08LQ=="]/div/ul/li[1]/div/div/div
+
+this is for the profile url inside the card
+//*[@id="jKfJXEKBRcypXY5XFn08LQ=="]/div/ul/li[1]/div/div/div/div[2]/div[1]/div[1]/div/span[1]/span/a

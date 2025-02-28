@@ -1,11 +1,9 @@
 import os
 import time
-import re
 import random
 import pandas as pd
 from dotenv import load_dotenv
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -32,27 +30,31 @@ chromedriver_path = "driver/chromedriver.exe"
 service = Service(chromedriver_path)
 driver = webdriver.Chrome(service=service, options=options)
 
+# Load city names from CSV
+city_file_path = "Data/Person Locations/indonesia_cities.csv"
+cities_df = pd.read_csv(city_file_path)
+cities = cities_df["City"].tolist()
+
+# CSV file path
+csv_file = "Data/LinkedIn_SCU_Alumni.csv"
+
+# Load existing data
+if os.path.exists(csv_file):
+    existing_df = pd.read_csv(csv_file)
+    scraped_urls = set(existing_df["Linkedin Link"].dropna())  # Set for fast lookup
+else:
+    existing_df = pd.DataFrame()
+    scraped_urls = set()
+
+# Global flag to stop scraping
+stop_scraping = False  
+
 def manual_login():
     """Prompts the user to log in manually."""
     driver.get("https://www.linkedin.com/login")
     print("🔹 Please log in manually and press Enter here once done.")
     input("🔹 Press Enter after logging in...")
     print("✅ Logged in manually!")
-
-# def login_linkedin():
-#     """Logs into LinkedIn securely."""
-#     driver.get("https://www.linkedin.com/login")
-    
-#     try:
-#         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "username"))).send_keys(LINKEDIN_EMAIL)
-#         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "password"))).send_keys(LINKEDIN_PASSWORD + Keys.RETURN)
-#         time.sleep(random.uniform(5, 7))  # Allow login process
-#         print("✅ Logged in successfully!")
-#     except Exception as e:
-#         print(f"❌ Login failed: {e}")
-#         driver.quit()
-#         exit()
-
 
 def scroll_page():
     """Scrolls down dynamically to load more profiles."""
@@ -64,7 +66,6 @@ def scroll_page():
         if new_height == last_height:
             break
         last_height = new_height
-
 
 def extract_profile_data(profile_url):
     """Extracts Experience, Education, and Licenses from an individual LinkedIn profile."""
@@ -100,72 +101,78 @@ def extract_profile_data(profile_url):
 
     return profile_data
 
+def search_alumni(city, max_profiles=50):
+    """Scrapes alumni data from LinkedIn for a given city."""
+    global stop_scraping  # Allow modification of the global flag
 
-def search_alumni(max_profiles=50):
-    """Scrapes Soegijapranata Catholic University alumni from LinkedIn with manual exit option."""
-    search_url = "https://www.linkedin.com/school/unika-soegijapranata-semarang/people/"
+    search_url = f"https://www.linkedin.com/school/unika-soegijapranata-semarang/people/?keywords={city}"
     driver.get(search_url)
-    time.sleep(random.uniform(5, 7))  
+    time.sleep(random.uniform(5, 7))
 
     alumni_list = []
-    visited_profiles = set()  
-    profiles_scraped = 5  
+    profiles_scraped = 0
 
     while profiles_scraped < max_profiles:
-        scroll_page()  
+        if stop_scraping:
+            print("❌ Stopping scraping immediately...")
+            return alumni_list  
+
+        scroll_page()
         try:
             profiles = WebDriverWait(driver, 15).until(
                 EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "org-people-profile-card__profile-info")]'))
             )
-            print(f"🔍 Found {len(profiles)} profiles on this scroll")
+            print(f"🔍 Found {len(profiles)} profiles in {city}")
 
             for profile in profiles:
-                if profiles_scraped >= max_profiles:
-                    print(f"✅ Reached the limit of {max_profiles} profiles. Stopping...")
+                if stop_scraping:
+                    print("❌ Stopping scraping immediately...")
                     return alumni_list  
 
-                # Allow manual exit
-                if input("🔹 Press Enter to continue scraping or type 'exit' to stop: ").strip().lower() == "exit":
-                    print("❌ Manual exit selected. Stopping...")
+                if profiles_scraped >= max_profiles:
+                    print(f"✅ Reached {max_profiles} profiles for {city}. Moving to the next city...")
+                    return alumni_list  
+
+                user_input = input("🔹 Press Enter to continue, type 'next' to skip city, or 'exit' to stop: ").strip().lower()
+                if user_input == "exit":
+                    stop_scraping = True
+                    print("❌ Stopping scraping immediately...")
                     return alumni_list
+                elif user_input == "next":
+                    print(f"➡️ Skipping city: {city}")
+                    return alumni_list  
 
                 try:
-                    # Extract Name
                     name_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]')
                     name = name_element.text.strip() if name_element else "Unknown"
 
-                    # Extract Job Title
                     job_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__subtitle")]')
                     job_title = job_element.text.strip() if job_element else "N/A"
 
-                    # Extract Profile Image
                     image_element = profile.find_element(By.TAG_NAME, "img")
                     image_url = image_element.get_attribute("src") if image_element else "No image"
 
-                    # Extract Profile URL (Anchor located inside div with the specific class)
                     profile_url_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]//a[contains(@href, "/in/")]')
                     profile_url = profile_url_element.get_attribute("href") if profile_url_element else ""
 
-                    # Skip if profile URL is already visited
-                    if profile_url in visited_profiles:
-                        print(f"⚠️ Skipping duplicate profile: {name} ({profile_url})")
-                        continue
+                    if profile_url in scraped_urls:
+                        print(f"🔹 Profile already scraped: {profile_url}")
+                        continue  
 
                     if profile_url:
-                        visited_profiles.add(profile_url) 
-                        profiles_scraped += 1  
+                        scraped_urls.add(profile_url)  # Mark as scraped
+                        profiles_scraped += 1
 
-                        # Open in new tab
                         driver.execute_script("window.open(arguments[0]);", profile_url)
-                        driver.switch_to.window(driver.window_handles[1])  
+                        driver.switch_to.window(driver.window_handles[1])
 
                         profile_data = extract_profile_data(profile_url)
 
-                        # Close tab and switch back
                         driver.close()
                         driver.switch_to.window(driver.window_handles[0])
 
                         alumni_list.append({
+                            "City": city,
                             "Name": name,
                             "Headlines": job_title,
                             "Linkedin Link": profile_url,
@@ -180,28 +187,36 @@ def search_alumni(max_profiles=50):
                     continue
 
         except Exception as e:
-            print(f"❌ No more profiles found: {e}")
+            print(f"❌ No more profiles found for {city}: {e}")
             break  
 
-    print(f"✅ Scraped {len(alumni_list)} profiles")
+    print(f"✅ Scraped {len(alumni_list)} profiles from {city}")
     return alumni_list
 
-
-def save_to_csv(data):
-    """Saves the scraped data to a CSV file with separate columns."""
-    df = pd.DataFrame(data, columns=["Name", "Headlines", "Linkedin Link", "Profile Picture", "Experience", "Education", "Licenses & Certifications"])
-    filename = "Data/LinkedIn_SCU_Alumni.csv"
-    df.to_csv(filename, index=False)
-    print(f"✅ Data saved to {filename}")
-
+def save_to_csv(new_data):
+    """Appends new data to the existing CSV file without overwriting."""
+    new_df = pd.DataFrame(new_data)
+    new_df.to_csv(csv_file, mode='a', header=not os.path.exists(csv_file), index=False)
+    print(f"✅ New data appended to {csv_file}")
 
 def main():
-    """Main function to execute the scraper."""
-    manual_login()
-    alumni_data = search_alumni()
-    save_to_csv(alumni_data)
-    driver.quit()
+    """Main function to execute the scraper for multiple cities."""
+    global stop_scraping
 
+    manual_login()
+    all_alumni_data = []
+
+    for city in cities:
+        if stop_scraping:
+            break  
+        print(f"🔍 Searching alumni from: {city}...")
+        alumni_data = search_alumni(city)
+        all_alumni_data.extend(alumni_data)
+
+    if all_alumni_data:
+        save_to_csv(all_alumni_data)
+    
+    driver.quit()
 
 if __name__ == "__main__":
     main()
