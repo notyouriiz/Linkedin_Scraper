@@ -55,6 +55,20 @@ def manual_login():
     print("🔹 Please log in manually and press Enter here once done.")
     input("🔹 Press Enter after logging in...")
     print("✅ Logged in manually!")
+    
+# def login_linkedin():
+#     """Logs into LinkedIn securely."""
+#     driver.get("https://www.linkedin.com/login")
+    
+#     try:
+#         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "username"))).send_keys(LINKEDIN_EMAIL)
+#         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "password"))).send_keys(LINKEDIN_PASSWORD + Keys.RETURN)
+#         time.sleep(random.uniform(5, 7))  # Allow login process
+#         print("✅ Logged in successfully!")
+#     except Exception as e:
+#         print(f"❌ Login failed: {e}")
+#         driver.quit()
+#         exit()    
 
 def scroll_page():
     """Scrolls down dynamically to load more profiles."""
