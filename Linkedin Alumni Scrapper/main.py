@@ -3,6 +3,7 @@ import time
 import random
 import pandas as pd
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -41,7 +42,7 @@ csv_file = "Data/LinkedIn_SCU_Alumni.csv"
 # Load existing data
 if os.path.exists(csv_file):
     existing_df = pd.read_csv(csv_file)
-    scraped_urls = set(existing_df["Linkedin Link"].dropna())  # Set for fast lookup
+    scraped_urls = set(existing_df["Linkedin Link"].dropna())
 else:
     existing_df = pd.DataFrame()
     scraped_urls = set()
@@ -84,7 +85,11 @@ def scroll_page():
 def extract_profile_data(profile_url):
     """Extracts Experience, Education, and Licenses from an individual LinkedIn profile."""
     driver.get(profile_url)
-    time.sleep(random.uniform(5, 7)) 
+    time.sleep(random.uniform(5, 7))  
+    scroll_page()  
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    sections = soup.find_all('section')
 
     profile_data = {
         "Experience": [],
@@ -92,27 +97,66 @@ def extract_profile_data(profile_url):
         "Licenses & Certifications": []
     }
 
-    # Extract Experience
-    try:
-        experiences = driver.find_elements(By.XPATH, "/html/body/div[6]/div[3]/div/div/div[2]/div/div/main/section[5]/div[3]/ul/li")
-        profile_data["Experience"] = [exp.text.strip() for exp in experiences]
-    except:
-        profile_data["Experience"] = []
+    # **Extract Experience**
+    experience = None
+    for sec in sections:
+        if sec.find('div', {'id': 'experience'}):
+            experience = sec
 
-    # Extract Education
-    try:
-        educations = driver.find_elements(By.XPATH, "/html/body/div[6]/div[3]/div/div/div[2]/div/div/main/section[6]/div[3]/ul/li")
-        profile_data["Education"] = [edu.text.strip() for edu in educations]
-    except:
-        profile_data["Education"] = []
+    if experience:
+        experiences = experience.find_all('div', {
+            'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
+        })
+        for exp in experiences:
+            job_title = exp.find('span', {'class': 'visually-hidden'})
+            company = exp.find('span', {'class': 't-14 t-normal'})
+            duration = exp.find('span', {'class': 't-14 t-normal t-black--light'})
 
-    # Extract Licenses & Certifications
-    try:
-        licenses = driver.find_elements(By.XPATH, "/html/body/div[6]/div[3]/div/div/div[2]/div/div/main/section[7]/div[3]/ul/li/div")
-        profile_data["Licenses & Certifications"] = [lic.text.strip() for lic in licenses]
-    except:
-        profile_data["Licenses & Certifications"] = []
+            profile_data["Experience"].append({
+                "Job Title": job_title.get_text(strip=True) if job_title else "N/A",
+                "Company": company.get_text(strip=True) if company else "N/A",
+                "Duration": duration.get_text(strip=True) if duration else "N/A"
+            })
 
+    # **Extract Education**
+    education = None
+    for sec in sections:
+        if sec.find('div', {'id': 'education'}):
+            education = sec
+
+    if education:
+        educations = education.find_all('div', {
+            'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
+        })
+        for edu in educations:
+            school = edu.find('span', {'class': 'visually-hidden'})
+            degree = edu.find('span', {'class': 't-14 t-normal'})
+            duration = edu.find('span', {'class': 't-14 t-normal t-black--light'})
+
+            profile_data["Education"].append({
+                "School": school.get_text(strip=True) if school else "N/A",
+                "Degree": degree.get_text(strip=True) if degree else "N/A",
+                "Duration": duration.get_text(strip=True) if duration else "N/A"
+            })
+
+    # **Extract Licenses & Certifications**
+    licenses = None
+    for sec in sections:
+        if sec.find('div', {'id': 'licenses_and_certifications'}):
+            licenses = sec
+
+    if licenses:
+        license_list = licenses.find_all('div', {
+            'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
+        })
+        for lic in license_list:
+            cert_name = lic.find('span', {'class': 'visually-hidden'})
+            issued_by = lic.find('span', {'class': 't-14 t-normal'})
+
+            profile_data["Licenses & Certifications"].append({
+                "Certification": cert_name.get_text(strip=True) if cert_name else "N/A",
+                "Issued By": issued_by.get_text(strip=True) if issued_by else "N/A"
+            })
     return profile_data
 
 def search_alumni(city, max_profiles=50):
