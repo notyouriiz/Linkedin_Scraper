@@ -98,7 +98,12 @@ def extract_profile_data(profile_url):
     }
 
     # **Extract Experience**
+    page_source = driver.page_source
+    soup = BeautifulSoup(page_source, 'lxml')
+
+    sections = soup.find_all('section', {'class': 'artdeco-card pv-profile-card break-words mt2'})
     experience = None
+
     for sec in sections:
         if sec.find('div', {'id': 'experience'}):
             experience = sec
@@ -107,6 +112,7 @@ def extract_profile_data(profile_url):
         experiences = experience.find_all('div', {
             'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
         })
+
         for exp in experiences:
             job_title = exp.find('span', {'class': 'visually-hidden'})
             company = exp.find('span', {'class': 't-14 t-normal'})
@@ -119,7 +125,12 @@ def extract_profile_data(profile_url):
             })
 
     # **Extract Education**
+    page_source = driver.page_source
+    soup = BeautifulSoup(page_source, 'lxml')
+
+    sections = soup.find_all('section', {'class': 'artdeco-card pv-profile-card break-words mt2'})
     education = None
+
     for sec in sections:
         if sec.find('div', {'id': 'education'}):
             education = sec
@@ -128,15 +139,20 @@ def extract_profile_data(profile_url):
         educations = education.find_all('div', {
             'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
         })
+
         for edu in educations:
-            school = edu.find('span', {'class': 'visually-hidden'})
-            degree = edu.find('span', {'class': 't-14 t-normal'})
-            duration = edu.find('span', {'class': 't-14 t-normal t-black--light'})
+            spans = edu.find_all('span', {'class': 'visually-hidden'})
+
+            school = spans[0].get_text(strip=True) if len(spans) > 0 else "N/A"
+            degree = spans[1].get_text(strip=True) if len(spans) > 1 else "N/A"
+            duration = spans[2].get_text(strip=True) if len(spans) > 2 else "N/A"
+            project = spans[3].get_text(strip=True) if len(spans) > 3 else "N/A"
 
             profile_data["Education"].append({
-                "School": school.get_text(strip=True) if school else "N/A",
-                "Degree": degree.get_text(strip=True) if degree else "N/A",
-                "Duration": duration.get_text(strip=True) if duration else "N/A"
+                "School": school,
+                "Degree": degree,
+                "Duration": duration,
+                "Project": project
             })
 
     # **Extract Licenses & Certifications**
