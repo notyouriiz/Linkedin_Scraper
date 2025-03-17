@@ -12,6 +12,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
+import warnings
+warnings.filterwarnings("ignore")
+
 # Load credentials
 load_dotenv("credentials.env")
 LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL")
