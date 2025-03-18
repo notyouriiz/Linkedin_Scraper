@@ -43,13 +43,16 @@ pip install -r requirements.txt
    Ensure that the `Data/Person Locations/indonesia_cities.csv` file contains a list of cities in a column named `City`.
 
 5. **Prepare Class Code**
-   Ensure that the `Class`,
    ```Python
    ('div', {
             'class': 'YqprdwMdlHkSDMqLRuVsNMDuqpfpOSlCY EUugwXMAWHNSsJUZCvVoLYGTUzCejokiBUPPY aDbiGyAraCVAtqkDKUGRiLuhDZgkXmYiMA' # Make sure this Code is UP TO DATE
         })
    ```
-   code from your Linkedin is Up To Date, the Class Code on the program might be different due to Linkedin Dynamic Section `Class` Code
+   <img align="center" src="Web Structure Image/Class Code.png" alt="Class Code Places" style="border-radius: 10px; margin-top: 10px;" height="30%" width="30%" /><br><br>
+   Ensure that the `Class`, code from your Linkedin is Up To Date, the Class Code on the program might be different due to Linkedin Dynamic Section `Class` Code.
+
+   <p align="center"><strong>💡Tips: Place your Cursor in the Border of the Section While Inspect With Cursor</strong></p>
+
 ## Usage
 Run the script with the following command:
 
