@@ -29,8 +29,6 @@ pip install -r requirements.txt
 - `numpy>=1.25.0` – Numerical computing.
 - `openpyxl>=3.1.2` – Reads and writes Excel files.
 - `python-dotenv>=1.0.0` – Loads environment variables.
-- `tqdm>=4.66.0` – Displays progress bars.
-- `termcolor>=2.3.0` – Adds color to terminal output.
 
 ## 🔧Setup
 1. **Install Dependencies**
