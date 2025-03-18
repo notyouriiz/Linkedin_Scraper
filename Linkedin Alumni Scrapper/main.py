@@ -15,10 +15,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 import warnings
 warnings.filterwarnings("ignore")
 
-# Load credentials
-load_dotenv("credentials.env")
-LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL")
-LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD")
+# # Load credentials
+# load_dotenv("credentials.env")
+# LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL")
+# LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD")
 
 # Set up Chrome options
 options = Options()
@@ -77,7 +77,7 @@ def manual_login():
 def scroll_page():
     """Scrolls down dynamically to load more profiles."""
     total_scrolls = random.randint(10, 20)  # Number of scroll actions
-    scroll_pause = [random.uniform(1.5, 4) for _ in range(total_scrolls)]  # Pause times
+    scroll_pause = [random.uniform(1.5, 4) for _ in range(total_scrolls)]  
 
     body = driver.find_element("tag name", "body")
 
@@ -184,6 +184,7 @@ def extract_profile_data(profile_url):
             })
     return profile_data
 
+# Auto Scraping
 def search_alumni(city, max_profiles=10):
     """Automatically scrapes alumni data from LinkedIn for a given city."""
     global stop_scraping  
@@ -285,6 +286,99 @@ def search_alumni(city, max_profiles=10):
 
     print(f"✅ Scraped {len(alumni_list)} profiles from {city}")
     return alumni_list
+
+# # Manual Scraping
+# def search_alumni(city, max_profiles=50):
+#     """Scrapes alumni data from LinkedIn for a given city."""
+#     global stop_scraping  # Allow modification of the global flag
+
+#     search_url = f"https://www.linkedin.com/school/unika-soegijapranata-semarang/people/?keywords={city}"
+#     driver.get(search_url)
+#     time.sleep(random.uniform(5, 7))
+
+#     alumni_list = []
+#     profiles_scraped = 0
+
+#     while profiles_scraped < max_profiles:
+#         if stop_scraping:
+#             print("❌ Stopping scraping immediately...")
+#             return alumni_list  
+
+#         scroll_page()
+#         try:
+#             profiles = WebDriverWait(driver, 15).until(
+#                 EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "org-people-profile-card__profile-info")]'))
+#             )
+#             print(f"🔍 Found {len(profiles)} profiles in {city}")
+
+#             for profile in profiles:
+#                 if stop_scraping:
+#                     print("❌ Stopping scraping immediately...")
+#                     return alumni_list  
+
+#                 if profiles_scraped >= max_profiles:
+#                     print(f"✅ Reached {max_profiles} profiles for {city}. Moving to the next city...")
+#                     return alumni_list  
+
+#                 user_input = input("🔹 Press Enter to continue, type 'next' to skip city, or 'exit' to stop: ").strip().lower()
+#                 if user_input == "exit":
+#                     stop_scraping = True
+#                     print("❌ Stopping scraping immediately...")
+#                     return alumni_list
+#                 elif user_input == "next":
+#                     print(f"➡️ Skipping city: {city}")
+#                     return alumni_list  
+
+#                 try:
+#                     name_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]')
+#                     name = name_element.text.strip() if name_element else "Unknown"
+
+#                     job_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__subtitle")]')
+#                     job_title = job_element.text.strip() if job_element else "N/A"
+
+#                     image_element = profile.find_element(By.TAG_NAME, "img")
+#                     image_url = image_element.get_attribute("src") if image_element else "No image"
+
+#                     profile_url_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]//a[contains(@href, "/in/")]')
+#                     profile_url = profile_url_element.get_attribute("href") if profile_url_element else ""
+
+#                     if profile_url in scraped_urls:
+#                         print(f"🔹 Profile already scraped: {profile_url}")
+#                         continue  
+
+#                     if profile_url:
+#                         scraped_urls.add(profile_url)  # Mark as scraped
+#                         profiles_scraped += 1
+
+#                         driver.execute_script("window.open(arguments[0]);", profile_url)
+#                         driver.switch_to.window(driver.window_handles[1])
+
+#                         profile_data = extract_profile_data(profile_url)
+
+#                         driver.close()
+#                         driver.switch_to.window(driver.window_handles[0])
+
+#                         alumni_list.append({
+#                             "City": city,
+#                             "Name": name,
+#                             "Headlines": job_title,
+#                             "Linkedin Link": profile_url,
+#                             "Profile Picture": image_url,
+#                             "Experience": profile_data["Experience"],
+#                             "Education": profile_data["Education"],
+#                             "Licenses & Certifications": profile_data["Licenses & Certifications"]
+#                         })
+
+#                 except Exception as e:
+#                     print(f"⚠️ Error extracting profile: {e}")
+#                     continue
+
+#         except Exception as e:
+#             print(f"❌ No more profiles found for {city}: {e}")
+#             break  
+
+#     print(f"✅ Scraped {len(alumni_list)} profiles from {city}")
+#     return alumni_list
 
 def save_to_csv(new_data):
     """Appends new data to the existing CSV file without overwriting."""
