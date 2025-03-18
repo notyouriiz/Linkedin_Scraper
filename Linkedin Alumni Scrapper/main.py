@@ -76,14 +76,20 @@ def manual_login():
 
 def scroll_page():
     """Scrolls down dynamically to load more profiles."""
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    while True:
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(random.uniform(2, 4))
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
+    total_scrolls = random.randint(10, 20)  # Number of scroll actions
+    scroll_pause = [random.uniform(1.5, 4) for _ in range(total_scrolls)]  # Pause times
+
+    body = driver.find_element("tag name", "body")
+
+    for i in range(total_scrolls):
+        scroll_height = random.randint(300, 700)  
+        driver.execute_script(f"window.scrollBy(0, {scroll_height});")
+        time.sleep(scroll_pause[i])  
+        if random.random() < 0.2:
+            driver.execute_script(f"window.scrollBy(0, {-random.randint(100, 300)});")
+            time.sleep(random.uniform(1, 2))
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(random.uniform(2, 4))
 
 def extract_profile_data(profile_url):
     """Extracts Experience, Education, and Licenses from an individual LinkedIn profile."""
@@ -113,7 +119,7 @@ def extract_profile_data(profile_url):
 
     if experience:
         experiences = experience.find_all('div', {
-            'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
+            'class': 'YqprdwMdlHkSDMqLRuVsNMDuqpfpOSlCY EUugwXMAWHNSsJUZCvVoLYGTUzCejokiBUPPY aDbiGyAraCVAtqkDKUGRiLuhDZgkXmYiMA' # Make sure this Code is UP TO DATE
         })
 
         for exp in experiences:
@@ -140,7 +146,7 @@ def extract_profile_data(profile_url):
 
     if education:
         educations = education.find_all('div', {
-            'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
+            'class': 'YqprdwMdlHkSDMqLRuVsNMDuqpfpOSlCY EUugwXMAWHNSsJUZCvVoLYGTUzCejokiBUPPY aDbiGyAraCVAtqkDKUGRiLuhDZgkXmYiMA' # Make sure this Code is UP TO DATE
         })
 
         for edu in educations:
@@ -166,7 +172,7 @@ def extract_profile_data(profile_url):
 
     if licenses:
         license_list = licenses.find_all('div', {
-            'class': 'nkuPpOPwqIooGCaBXuqZNVaxWBdnJXJXTXCyY EosmbAbFIoCeldPQMQSdhtwXadLngZfVcTW EVHJaKueawvwsbizlikIjleWFPNylcbZVtySzQnJY'
+            'class': 'YqprdwMdlHkSDMqLRuVsNMDuqpfpOSlCY EUugwXMAWHNSsJUZCvVoLYGTUzCejokiBUPPY aDbiGyAraCVAtqkDKUGRiLuhDZgkXmYiMA' # Make sure this Code is UP TO DATE
         })
         for lic in license_list:
             cert_name = lic.find('span', {'class': 'visually-hidden'})
@@ -178,9 +184,9 @@ def extract_profile_data(profile_url):
             })
     return profile_data
 
-def search_alumni(city, max_profiles=50):
-    """Scrapes alumni data from LinkedIn for a given city."""
-    global stop_scraping  # Allow modification of the global flag
+def search_alumni(city, max_profiles=10):
+    """Automatically scrapes alumni data from LinkedIn for a given city."""
+    global stop_scraping  
 
     search_url = f"https://www.linkedin.com/school/unika-soegijapranata-semarang/people/?keywords={city}"
     driver.get(search_url)
@@ -194,7 +200,9 @@ def search_alumni(city, max_profiles=50):
             print("❌ Stopping scraping immediately...")
             return alumni_list  
 
-        scroll_page()
+        scroll_page()  # Scroll through alumni page
+        time.sleep(random.uniform(60, 180))  
+
         try:
             profiles = WebDriverWait(driver, 15).until(
                 EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "org-people-profile-card__profile-info")]'))
@@ -202,22 +210,8 @@ def search_alumni(city, max_profiles=50):
             print(f"🔍 Found {len(profiles)} profiles in {city}")
 
             for profile in profiles:
-                if stop_scraping:
-                    print("❌ Stopping scraping immediately...")
-                    return alumni_list  
-
-                if profiles_scraped >= max_profiles:
-                    print(f"✅ Reached {max_profiles} profiles for {city}. Moving to the next city...")
-                    return alumni_list  
-
-                user_input = input("🔹 Press Enter to continue, type 'next' to skip city, or 'exit' to stop: ").strip().lower()
-                if user_input == "exit":
-                    stop_scraping = True
-                    print("❌ Stopping scraping immediately...")
-                    return alumni_list
-                elif user_input == "next":
-                    print(f"➡️ Skipping city: {city}")
-                    return alumni_list  
+                if stop_scraping or profiles_scraped >= max_profiles:
+                    break  
 
                 try:
                     name_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]')
@@ -237,7 +231,7 @@ def search_alumni(city, max_profiles=50):
                         continue  
 
                     if profile_url:
-                        scraped_urls.add(profile_url)  # Mark as scraped
+                        scraped_urls.add(profile_url)  
                         profiles_scraped += 1
 
                         driver.execute_script("window.open(arguments[0]);", profile_url)
@@ -245,8 +239,10 @@ def search_alumni(city, max_profiles=50):
 
                         profile_data = extract_profile_data(profile_url)
 
-                        driver.close()
-                        driver.switch_to.window(driver.window_handles[0])
+                        driver.close()  
+                        driver.switch_to.window(driver.window_handles[0])  
+
+                        time.sleep(random.uniform(60, 120))  # Stay on alumni page for 1-2 minutes before visiting another profile
 
                         alumni_list.append({
                             "City": city,
@@ -263,9 +259,29 @@ def search_alumni(city, max_profiles=50):
                     print(f"⚠️ Error extracting profile: {e}")
                     continue
 
+            if profiles_scraped >= max_profiles:
+                user_input = input("🔹 Max profiles reached. Type 'continue' to keep scraping, 'next' for next city, or 'exit' to stop: ").strip().lower()
+                if user_input == "exit":
+                    stop_scraping = True
+                    print("❌ Stopping scraping immediately...")
+                    return alumni_list
+                elif user_input == "next":
+                    print(f"➡️ Moving to the next city...")
+                    return alumni_list
+
         except Exception as e:
             print(f"❌ No more profiles found for {city}: {e}")
-            break  
+            user_input = input("🔹 All profiles scraped for this city. Type 'continue' to keep scraping, or 'exit' to stop: ").strip().lower()
+            if user_input == "exit":
+                stop_scraping = True
+                print("❌ Stopping scraping immediately...")
+                return alumni_list
+            else:
+                print("🔄 Restarting search for more profiles...")
+                continue  
+
+        if "Please verify your identity" in driver.page_source:
+            input("🛑 CAPTCHA detected! Solve it manually, then press Enter to continue...")
 
     print(f"✅ Scraped {len(alumni_list)} profiles from {city}")
     return alumni_list
