@@ -55,8 +55,9 @@ pip install -r requirements.txt
             'class': 'YqprdwMdlHkSDMqLRuVsNMDuqpfpOSlCY EUugwXMAWHNSsJUZCvVoLYGTUzCejokiBUPPY aDbiGyAraCVAtqkDKUGRiLuhDZgkXmYiMA' # Make sure this Code is UP TO DATE
         })
    ```
-   <img align="center" src="Web Structure Image/Class Code.png" alt="Class Code Places" style="border-radius: 10px; margin-top: 10px;" height="30%" width="30%" /><br><br>
-   Ensure that the `Class`, code from your Linkedin is Up To Date, the Class Code on the program might be different due to Linkedin Dynamic Section `Class` Code.
+   <img align="center" src="Assets/Background Code.png" alt="Class Code Places" style="border-radius: 10px; margin-top: 10px;" height="30%" width="30%" /><br><br>
+   Ensure that the `Class`, code from your Linkedin is Up To Date, the Class Code on the program might be different due to Linkedin Dynamic Section `Class` Code. This is to get data from Experience, Education and License & Certification
+   <img align="center" src="Assets/Cities Code.png" alt="Class Code Places" style="border-radius: 10px; margin-top: 10px;" height="30%" width="30%" /><br><br>   
 
    <p align="center"><strong>💡Tips: Place your Cursor in the Border of the Section While Inspect With Cursor</strong></p>
 
@@ -100,11 +101,10 @@ with the following fields:
 - Avoid running the script too frequently to prevent detection.
 - Ensure your LinkedIn account is in good standing before scraping.
 
-## 📜License
-This project is for educational purposes only. Use at your own risk.
-
+## 🙏Acknowledgement
+<img align="center" src="Assets/Logo SSCC.png" alt="Soegijapranata Student Career Centre (SSCC) Logo" style="border-radius: 10px; margin-top: 10px;" height="30%" width="30%" />
+This project is under the name of Soegijapranata Student Career Centre (SSCC) and only use for academic purposes
 ---
 
-**Author:** Faiz Noor Adhytia  
+**Author:** Faiz Noor Adhytia
 **Contact:** faizadhytia24@gmail.com
-
