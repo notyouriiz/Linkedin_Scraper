@@ -3,7 +3,6 @@ import time
 import random
 from datetime import datetime
 import pandas as pd
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -13,12 +12,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
-
-
-# # Load credentials
-# load_dotenv("credentials.env")
-# LINKEDIN_EMAIL = os.getenv("LINKEDIN_EMAIL")
-# LINKEDIN_PASSWORD = os.getenv("LINKEDIN_PASSWORD")
 
 # Set up Chrome options
 options = Options()
