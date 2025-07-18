@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LinkedIn Alumni Scraper</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+      }
+      input,
+      button,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+      }
+      .message {
+        background: #e0ffe0;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 6px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background-color: #f0f0f0;
+      }
+      a.button {
+        display: inline-block;
+        padding: 10px 15px;
+        margin-top: 15px;
+        background: #4caf50;
+        color: white;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎓 LinkedIn Alumni Scraper</h1>
+
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div class="message">{{ messages[0] }}</div>
+    {% endif %} {% endwith %}
+
+    <!--<p>
+      <a href="/login" target="_blank">🔐 Click here to log in to LinkedIn</a>
+    </p>-->
+
+    <form method="POST" enctype="multipart/form-data">
+      <label>📍 Location class name:</label>
+      <input type="text" name="location_class" required />
+
+      <label>💼 Section class name (Experience/Education):</label>
+      <input type="text" name="section_class" required />
+
+      <label>🔢 Max number of profiles to scrape:</label>
+      <input type="number" name="max_profiles" value="10" min="1" />
+
+      <label>💾 Save mode:</label><br />
+      <input type="radio" id="append" name="save_mode" value="append" checked />
+      <label for="append">Append</label><br />
+      <input type="radio" id="overwrite" name="save_mode" value="overwrite" />
+      <label for="overwrite">Overwrite</label><br /><br />
+
+      <label
+        >📄 Upload CSV file of names:</label
+      >
+      <input type="file" name="name_csv" accept=".csv" />
+
+      <div id="existing_csv_section">
+        <label>⬆️ Upload previous scraped CSV (only for append mode):</label>
+        <input type="file" name="existing_csv" accept=".csv" />
+      </div>
+
+      <button type="submit">🚀 Start Scraping</button>
+    </form>
+
+    {% if cleaned_data %}
+    <a class="button" href="{{ url_for('download_cleaned') }}"
+      >📥 Download Cleaned CSV</a
+    >
+    <h2>📊 Preview of Cleaned Data (Top 10 Rows)</h2>
+    <table>
+      <tr>
+        {% for key in cleaned_data[0].keys() %}
+        <th>{{ key }}</th>
+        {% endfor %}
+      </tr>
+      {% for row in cleaned_data %}
+      <tr>
+        {% for value in row.values() %}
+        <td>{{ value|safe }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const appendRadio = document.getElementById("append");
+        const overwriteRadio = document.getElementById("overwrite");
+        const existingCsvSection = document.getElementById(
+          "existing_csv_section"
+        );
+
+        function toggleCsvSection() {
+          existingCsvSection.style.display = appendRadio.checked
+            ? "block"
+            : "none";
+        }
+
+        appendRadio.addEventListener("change", toggleCsvSection);
+        overwriteRadio.addEventListener("change", toggleCsvSection);
+
+        toggleCsvSection(); // Initial call
+      });
+    </script>
+  </body>
+</html>
