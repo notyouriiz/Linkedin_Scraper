@@ -1,0 +1,1 @@
+options.add_argument("--disable-gpu")
