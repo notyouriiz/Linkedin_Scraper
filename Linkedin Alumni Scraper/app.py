@@ -33,17 +33,20 @@ def index():
             existing_scraped_file.save("Data/Linkedin_SCU_Alumni_2025.csv")
             flash("✅ Existing scraped data uploaded for appending.")
 
-        # ✅ This check should be here
         if not location_class or not section_class:
             flash("Please provide both class names.")
             return redirect(url_for("index"))
 
+        # Run scraper
         run_scraper(location_class, section_class, max_profiles, overwrite)
 
+        # Always prepare for download after scraping
         if os.path.exists(cleaned_path):
             df = pd.read_csv(cleaned_path)
             cleaned_data = df.head(10).to_dict(orient="records")
             flash("✅ Scraping and cleaning completed.")
+        else:
+            flash("⚠️ Scraping done but no cleaned data found.")
 
     return render_template("index.html", cleaned_data=cleaned_data)
 

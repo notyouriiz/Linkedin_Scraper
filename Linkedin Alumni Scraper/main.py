@@ -14,10 +14,9 @@ import undetected_chromedriver as uc
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
-
 from Formatter.data_cleaner import clean_scraped_data
 
-
+stop_scraping = False
 driver = None
 scraped_urls = set()
 city_file_path = "Data/Person Locations/Indonesia_names.csv"
@@ -35,11 +34,6 @@ def start_driver():
     options.add_argument("--start-maximized")
     options.add_argument("--lang=en-US,en")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
-    
-    # Optional: Set proxy (uncomment and modify if using)
-    # proxy = "username:password@proxy_host:port"
-    # options.add_argument(f"--proxy-server=http://{proxy}")
-    
     driver = uc.Chrome(driver_executable_path="driver/chromedriver.exe", options=options)
 
 def manual_login():
@@ -177,57 +171,71 @@ def search_alumni(keyword, profiles_scraped, max_profiles, location_class, secti
             return alumni_list
 
         scroll_page(driver)
+
         try:
             profiles = WebDriverWait(driver, 15).until(
-                EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "org-people-profile-card__profile-info")]'))
+                EC.presence_of_all_elements_located(
+                    (By.XPATH, '//div[contains(@class, "org-people-profile-card__profile-info")]')
+                )
             )
             print(f"\n🔍 Found {len(profiles)} profiles in {keyword}\n")
 
             new_profile_found = False
 
             for profile in profiles:
+                # Check again before opening new profile
                 if stop_scraping or profiles_scraped + len(alumni_list) >= max_profiles:
                     return alumni_list
 
                 try:
-                    profile_url_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]//a[contains(@href, "/in/")]')
+                    profile_url_element = profile.find_element(
+                        By.XPATH,
+                        './/div[contains(@class, "artdeco-entity-lockup__title")]//a[contains(@href, "/in/")]'
+                    )
                     profile_url = profile_url_element.get_attribute("href") if profile_url_element else ""
 
-                    if profile_url in scraped_urls:
+                    # Skip duplicates and re-check profile limit BEFORE scraping
+                    if profile_url in scraped_urls or not profile_url:
                         continue
+                    if profiles_scraped + len(alumni_list) >= max_profiles:
+                        return alumni_list
 
-                    name_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]')
+                    name_element = profile.find_element(
+                        By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__title")]'
+                    )
                     name = name_element.text.strip() if name_element else "Unknown"
 
-                    job_element = profile.find_element(By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__subtitle")]')
+                    job_element = profile.find_element(
+                        By.XPATH, './/div[contains(@class, "artdeco-entity-lockup__subtitle")]'
+                    )
                     job_title = job_element.text.strip() if job_element else "N/A"
 
                     image_element = profile.find_element(By.TAG_NAME, "img")
                     image_url = image_element.get_attribute("src") if image_element else "No image"
 
-                    if profile_url:
-                        scraped_urls.add(profile_url)
-                        new_profile_found = True
+                    # Mark URL as scraped before opening tab
+                    scraped_urls.add(profile_url)
+                    new_profile_found = True
 
-                        driver.execute_script("window.open(arguments[0]);", profile_url)
-                        driver.switch_to.window(driver.window_handles[1])
+                    driver.execute_script("window.open(arguments[0]);", profile_url)
+                    driver.switch_to.window(driver.window_handles[1])
 
-                        profile_data = extract_profile_data(profile_url, location_class, section_class)
+                    profile_data = extract_profile_data(profile_url, location_class, section_class)
 
-                        driver.close()
-                        driver.switch_to.window(driver.window_handles[0])
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
 
-                        alumni_list.append({
-                            "City": profile_data["Location"],
-                            "Name": name,
-                            "Headlines": job_title,
-                            "Linkedin Link": profile_url,
-                            "Profile Picture": image_url,
-                            "Experience": profile_data["Experience"],
-                            "Education": profile_data["Education"],
-                            "Licenses & Certifications": profile_data["Licenses & Certifications"],
-                            "Scraped At": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        })
+                    alumni_list.append({
+                        "City": profile_data["Location"],
+                        "Name": name,
+                        "Headlines": job_title,
+                        "Linkedin Link": profile_url,
+                        "Profile Picture": image_url,
+                        "Experience": profile_data["Experience"],
+                        "Education": profile_data["Education"],
+                        "Licenses & Certifications": profile_data["Licenses & Certifications"],
+                        "Scraped At": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    })
 
                 except Exception as e:
                     print(f"⚠️ Error extracting profile: {e}")
@@ -243,6 +251,7 @@ def search_alumni(keyword, profiles_scraped, max_profiles, location_class, secti
 
     print(f"✅ Scraped {len(alumni_list)} profiles from {keyword}")
     return alumni_list
+
 
 
 def save_to_csv(all_alumni_data, filename=csv_file, overwrite=False):
@@ -268,18 +277,21 @@ def save_to_csv(all_alumni_data, filename=csv_file, overwrite=False):
     
     
 def load_existing_data(filename):
-    """Load existing data from the CSV file."""
+    """Load existing data from the CSV file, return empty list if missing."""
+    if not os.path.exists(filename):
+        return []
     with open(filename, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
 
 
 def run_scraper(location_class, section_class, max_profiles, overwrite=False):
-
     global scraped_urls
 
     start_driver()
-    scraped_urls = set(p["Linkedin Link"] for p in load_existing_data(csv_file))
+    scraped_urls = set()
+    if not overwrite:
+        scraped_urls = set(p["Linkedin Link"] for p in load_existing_data(csv_file))
 
     keywords_df = pd.read_csv(city_file_path)
     keywords = keywords_df["Name"].tolist()
