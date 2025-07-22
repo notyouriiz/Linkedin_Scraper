@@ -1,48 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <title>LinkedIn Alumni Scraper</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: auto;
-        padding: 20px;
+      :root {
+        --primary: #007bff;
+        --background: #f9f9f9;
+        --text: #333;
+        --card-bg: #fff;
+        --border: #ddd;
+        --button-bg: #007bff;
+        --button-text: #fff;
+        --accent: #e8f0fe;
       }
-      input,
-      button,
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        margin: 0;
+        padding: 40px;
+        max-width: 800px;
+        margin-inline: auto;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 30px;
+      }
+
+      form {
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      label {
+        font-weight: 500;
+        display: block;
+        margin-top: 18px;
+        margin-bottom: 6px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="file"],
       select {
         width: 100%;
         padding: 10px;
-        margin: 10px 0;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 14px;
       }
+
+      input[type="radio"] {
+        margin-right: 5px;
+      }
+
+      button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 12px;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border: none;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      button:hover {
+        background-color: #0056c0;
+      }
+
       .message {
-        background: #e0ffe0;
-        padding: 10px;
-        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding: 12px;
+        background-color: var(--accent);
+        border: 1px solid var(--border);
+        border-radius: 6px;
       }
+
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-top: 30px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
       }
+
       th,
       td {
-        border: 1px solid #ccc;
-        padding: 6px;
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
         text-align: left;
-        vertical-align: top;
       }
+
       th {
-        background-color: #f0f0f0;
+        background-color: #f3f3f3;
+        font-weight: 600;
       }
+
       a.button {
         display: inline-block;
-        padding: 10px 15px;
-        margin-top: 15px;
-        background: #4caf50;
+        padding: 12px 18px;
+        background-color: #28a745;
         color: white;
+        border-radius: 6px;
         text-decoration: none;
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      a.button:hover {
+        background-color: #218838;
       }
     </style>
   </head>
@@ -52,10 +128,6 @@
     {% with messages = get_flashed_messages() %} {% if messages %}
     <div class="message">{{ messages[0] }}</div>
     {% endif %} {% endwith %}
-
-    <!--<p>
-      <a href="/login" target="_blank">🔐 Click here to log in to LinkedIn</a>
-    </p>-->
 
     <form method="POST" enctype="multipart/form-data">
       <label>📍 Location class name:</label>
@@ -67,15 +139,11 @@
       <label>🔢 Max number of profiles to scrape:</label>
       <input type="number" name="max_profiles" value="10" min="1" />
 
-      <label>💾 Save mode:</label><br />
-      <input type="radio" id="append" name="save_mode" value="append" checked />
-      <label for="append">Append</label><br />
-      <input type="radio" id="overwrite" name="save_mode" value="overwrite" />
-      <label for="overwrite">Overwrite</label><br /><br />
+      <label>💾 Save mode:</label>
+      <label><input type="radio" name="save_mode" value="append" checked /> Append</label>
+      <label><input type="radio" name="save_mode" value="overwrite" /> Overwrite</label>
 
-      <label
-        >📄 Upload CSV file of names:</label
-      >
+      <label>📄 Upload CSV file of names:</label>
       <input type="file" name="name_csv" accept=".csv" />
 
       <div id="existing_csv_section">
@@ -90,7 +158,8 @@
     <a class="button" href="{{ url_for('download_cleaned') }}"
       >📥 Download Cleaned CSV</a
     >
-    <h2>📊 Preview of Cleaned Data (Top 10 Rows)</h2>
+
+    <h2 style="margin-top: 30px;">📊 Preview of Cleaned Data (Top 10 Rows)</h2>
     <table>
       <tr>
         {% for key in cleaned_data[0].keys() %}
@@ -109,16 +178,16 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const appendRadio = document.getElementById("append");
-        const overwriteRadio = document.getElementById("overwrite");
-        const existingCsvSection = document.getElementById(
-          "existing_csv_section"
+        const appendRadio = document.querySelector(
+          'input[name="save_mode"][value="append"]'
         );
+        const overwriteRadio = document.querySelector(
+          'input[name="save_mode"][value="overwrite"]'
+        );
+        const existingCsvSection = document.getElementById("existing_csv_section");
 
         function toggleCsvSection() {
-          existingCsvSection.style.display = appendRadio.checked
-            ? "block"
-            : "none";
+          existingCsvSection.style.display = appendRadio.checked ? "block" : "none";
         }
 
         appendRadio.addEventListener("change", toggleCsvSection);
