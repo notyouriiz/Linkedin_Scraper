@@ -125,9 +125,11 @@
   <body>
     <h1>🎓 LinkedIn Alumni Scraper</h1>
 
-    {% with messages = get_flashed_messages() %} {% if messages %}
-    <div class="message">{{ messages[0] }}</div>
-    {% endif %} {% endwith %}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
 
     <form method="POST" enctype="multipart/form-data">
       <label>📍 Location class name:</label>
@@ -147,7 +149,7 @@
       <input type="file" name="name_csv" accept=".csv" />
 
       <div id="existing_csv_section">
-        <label>⬆️ Upload previous scraped CSV (only for append mode):</label>
+        <label>⬆️ Upload previous scraped CSV:</label>
         <input type="file" name="existing_csv" accept=".csv" />
       </div>
 
@@ -155,25 +157,23 @@
     </form>
 
     {% if cleaned_data %}
-    <a class="button" href="{{ url_for('download_cleaned') }}"
-      >📥 Download Cleaned CSV</a
-    >
+      <a class="button" href="{{ url_for('download_cleaned') }}">📥 Download Cleaned CSV</a>
 
-    <h2 style="margin-top: 30px;">📊 Preview of Cleaned Data (Top 10 Rows)</h2>
-    <table>
-      <tr>
-        {% for key in cleaned_data[0].keys() %}
-        <th>{{ key }}</th>
+      <h2 style="margin-top: 30px;">📊 Preview of Cleaned Data (Top 10 Rows)</h2>
+      <table>
+        <tr>
+          {% for key in cleaned_data[0].keys() %}
+            <th>{{ key }}</th>
+          {% endfor %}
+        </tr>
+        {% for row in cleaned_data %}
+          <tr>
+            {% for value in row.values() %}
+              <td>{{ value|safe }}</td>
+            {% endfor %}
+          </tr>
         {% endfor %}
-      </tr>
-      {% for row in cleaned_data %}
-      <tr>
-        {% for value in row.values() %}
-        <td>{{ value|safe }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </table>
+      </table>
     {% endif %}
 
     <script>
@@ -193,7 +193,7 @@
         appendRadio.addEventListener("change", toggleCsvSection);
         overwriteRadio.addEventListener("change", toggleCsvSection);
 
-        toggleCsvSection(); // Initial call
+        toggleCsvSection();
       });
     </script>
   </body>
